@@ -3,7 +3,14 @@ RSpec.describe RestApi do
     expect(RestApi::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  class Earthquake < RestApi::Base
+
+    BASE_URL = 'https://earthquake.usgs.gov/fdsnws/event/1/'
+
+    def catalogs
+      get "catalogs"
+    end
+
   end
+
 end

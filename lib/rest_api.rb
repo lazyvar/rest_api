@@ -1,5 +1,5 @@
 require "rest_api/version"
-require "rest-client"
+require 'rest-client'
 
 module RestApi
   class Error < StandardError; end
