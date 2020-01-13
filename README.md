@@ -1,6 +1,6 @@
 # RestApi
 
-Wrapper around RestClient for defining a restful network API
+Wrapper around RestClient for defining a restful network API.
 
 ## Installation
 
@@ -20,7 +20,77 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Consider [an api of Ice and Fire](https://anapioficeandfire.com/). We can define a `RestApi` like so:
+```rb
+module ASOIF
+  class BaseApi < RestApi::Base
+    BASE_URL = 'https://anapioficeandfire.com/api/'
+  end
+end
+
+module ASOIF
+  class Character < BaseApi
+    class << self
+      
+      def find(id)
+        get "characters/#{id}"
+      end
+      
+      def all_alive
+        get 'characters?isAlive=true'
+      end
+      
+    end
+  end
+end
+
+module ASOIF
+  class House < BaseApi
+    class << self
+      
+      def all
+        get 'houses'
+      end
+      
+      def create(params)
+        post 'houses', params
+      end
+      
+    end
+  end
+end
+```
+
+This library takes an opinion on response parsing. Two things to note:
+  1. Response format is assumed JSON and parsed using `JSON.parse`
+  2. Rather than return a hash of hashes, a [`RecursiveOpenStruct`](https://github.com/lazyvar/rest_api/blob/master/lib/recursive_open_struct.rb) is returned
+  
+These two factors allow for the following call syntax:
+```rb
+john_snow = ASOIAF::Character.find(583)
+puts john_snow.titles.first # "Lord Commander of the Night's Watch"
+```
+
+`ResApi` allows defining of `base_headers` that will be passed into every requst. This is commonly used for authentication.
+
+```rb
+module NSA
+  class BaseApi < RestApi::Base
+
+  BASE_URL = Settings.urls.nsa
+
+    class << self
+
+      private
+
+      def base_headers
+        { :Authorization => "Token token=#{Settings.nsa.secret}" }
+      end
+
+    end
+  end
+end
+```
 
 ## Development
 
@@ -30,4 +100,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rest_api.
+Bug reports and pull requests are welcome on GitHub at https://github.com/lazyvar/rest_api.
